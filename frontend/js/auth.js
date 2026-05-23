@@ -21,11 +21,13 @@ function showAppPage() {
     const currentUser = document.getElementById('currentUser');
     if (currentUser) currentUser.innerText = username;
   }
-  if (typeof map !== 'undefined' && map && typeof map.invalidateSize === 'function') {
+  // ensure map is initialized and invalidated after page becomes visible
+  try {
+    if (typeof initializeMap === 'function') initializeMap();
     setTimeout(() => {
-      map.invalidateSize();
-    }, 100);
-  }
+      if (window.map && typeof window.map.invalidateSize === 'function') window.map.invalidateSize();
+    }, 150);
+  } catch (e) { console.error(e); }
 }
 
 window.register = async function () {

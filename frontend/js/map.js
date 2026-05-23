@@ -1,11 +1,13 @@
-// Initialize Leaflet map only if library loaded
+// Lazy initialize Leaflet map when needed (avoids creating map in hidden container)
 let map;
 let routeLine;
 let tileLayer;
-let debugOverlay;
+
 function createMapDebugUI() {
   const el = document.getElementById('map');
   if (!el) return;
+  // avoid duplicating
+  if (document.getElementById('map-debug')) return;
   const box = document.createElement('div');
   box.id = 'map-debug';
   box.innerHTML = `
@@ -17,12 +19,21 @@ function createMapDebugUI() {
     if (tileLayer) {
       try { tileLayer.remove(); } catch(e){}
       el.classList.add('tiles-missing');
-      document.getElementById('map-debug-info').innerText = 'Mode: marker-only';
+      const info = document.getElementById('map-debug-info');
+      if (info) info.innerText = 'Mode: marker-only';
     }
   });
 }
 
-if (typeof L !== 'undefined') {
+function initializeMap() {
+  if (map) return map;
+  const el = document.getElementById('map');
+  if (!el) return null;
+  if (typeof L === 'undefined') {
+    el.innerHTML = '<div style="color:#cbd5e1;padding:20px">Bản đồ không thể tải (Leaflet chưa được tải). Vui lòng kiểm tra kết nối mạng.</div>';
+    return null;
+  }
+
   map = L.map("map").setView([21.0285, 105.8542], 13);
   tileLayer = L.tileLayer(
     "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
@@ -49,9 +60,8 @@ if (typeof L !== 'undefined') {
     }
   });
 
-  // create debug UI
+  // create debug UI and start updater
   createMapDebugUI();
-  // update debug info periodically
   setInterval(()=>{
     try{
       const info = document.getElementById('map-debug-info');
@@ -61,17 +71,13 @@ if (typeof L !== 'undefined') {
     }catch(e){}
   },1000);
 
+  // initial marker and polyline
   const marker = L.marker([21.0285, 105.8542]).addTo(map);
+  routeLine = L.polyline([], { color: "red", weight: 5 }).addTo(map);
 
-  routeLine = L.polyline([], {
-    color: "red",
-    weight: 5
-  }).addTo(map);
-
-} else {
-  // graceful fallback: show message instead of throwing
-  const el = document.getElementById('map');
-  if (el) {
-    el.innerHTML = '<div style="color:#cbd5e1;padding:20px">Bản đồ không thể tải (Leaflet chưa được tải). Vui lòng kiểm tra kết nối mạng.</div>';
-  }
+  // expose map globally
+  window.map = map;
+  return map;
 }
+
+window.initializeMap = initializeMap;
