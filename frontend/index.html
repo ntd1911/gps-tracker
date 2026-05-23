@@ -17,6 +17,8 @@
     rel="stylesheet"
     href="https://unpkg.com/leaflet/dist/leaflet.css"
   />
+  <!-- Local fallback (install leaflet via npm if offline) -->
+  <link rel="stylesheet" href="/@fs/node_modules/leaflet/dist/leaflet.css" />
 
   <!-- CSS -->
   <link
@@ -28,13 +30,48 @@
 
 <body>
 
-<div class="container">
+<div id="authPage" class="auth-page">
+  <div id="loginSection" class="auth-card">
+    <h2>Đăng nhập</h2>
+    <input id="loginUsername" placeholder="Username" />
+    <input id="loginPassword" type="password" placeholder="Password" />
+    <button onclick="login()">Đăng nhập</button>
+    <div class="auth-footer">
+      <span>Chưa có tài khoản?</span>
+      <button onclick="showRegister()">Đăng ký</button>
+    </div>
+  </div>
+  <div id="registerSection" class="auth-card" style="display:none;">
+    <h2>Đăng ký</h2>
+    <input id="regUsername" placeholder="Username" />
+    <input id="regPassword" type="password" placeholder="Password" />
+    <button onclick="register()">Đăng ký</button>
+    <div class="auth-footer">
+      <span>Đã có tài khoản?</span>
+      <button onclick="showLogin()">Đăng nhập</button>
+    </div>
+  </div>
+</div>
+
+<div id="appPage" class="container" style="display:none;">
 
   <!-- SIDEBAR -->
   <div class="sidebar">
 
     <div class="logo">
       GPS TRACKER
+    </div>
+
+    <div class="card">
+      <h3>Thiết bị của tôi</h3>
+      <div id="myDevicesList">(Đăng nhập để xem thiết bị)</div>
+      <div style="margin-top:8px">
+        <input id="newDeviceChannel" placeholder="Channel ID" />
+        <input id="newDeviceName" placeholder="Tên thiết bị (tùy chọn)" />
+        <button onclick="addMyDevice()">Thêm thiết bị</button>
+      </div>
+      <button onclick="loadUserDevices()" style="margin-top:8px">Làm mới danh sách</button>
+      <button onclick="logout()" style="margin-top:8px">Đăng xuất</button>
     </div>
 
     <!-- GPS INFO -->
@@ -92,9 +129,9 @@
 
     <div class="card">
 
-    <button onclick="saveCurrentLocation()">
-      Lưu điểm đỗ xe
-    </button>
+      <button onclick="saveCurrentLocation()">
+        Lưu điểm đỗ xe
+      </button>
 
     </div>
 
@@ -109,7 +146,7 @@
         Realtime GPS Tracking
       </h2>
 
-      <div class="user">
+      <div class="user" id="currentUser">
         Admin
       </div>
 
@@ -185,6 +222,8 @@
 
 <!-- LEAFLET -->
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<!-- Local fallback -->
+<script src="/@fs/node_modules/leaflet/dist/leaflet.js"></script>
 
 <!-- JS -->
 <script src="js/config.js"></script>
@@ -194,6 +233,10 @@
 <script src="js/history.js"></script>
 <script src="js/gps.js"></script>
 <script src="js/control.js"></script>
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/devices.js"></script>
+<script src="js/parking.js"></script>
 <script src="js/app.js"></script>
 
 </body>
