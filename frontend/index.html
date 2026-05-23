@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+
+  <meta charset="UTF-8" />
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+
+  <title>GPS Tracker Dashboard</title>
+
+  <!-- LEAFLET -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet/dist/leaflet.css"
+  />
+
+  <!-- CSS -->
+  <link
+    rel="stylesheet"
+    href="css/style.css"
+  />
+
+</head>
+
+<body>
+
+<div class="container">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+
+    <div class="logo">
+      GPS TRACKER
+    </div>
+
+    <!-- GPS INFO -->
+    <div class="card">
+
+      <h3>Thông tin GPS</h3>
+
+      <div class="info">
+        Latitude:
+        <span id="lat">--</span>
+      </div>
+
+      <div class="info">
+        Longitude:
+        <span id="lng">--</span>
+      </div>
+
+      <div class="info">
+        Speed:
+        <span id="speed">--</span>
+      </div>
+
+      <div class="info">
+        Status:
+        <span class="status">
+          OFFLINE
+        </span>
+      </div>
+
+    </div>
+
+    <!-- HISTORY -->
+    <div class="card">
+
+      <h3>Lịch sử</h3>
+
+      <input
+        type="date"
+        id="historyDate"
+      />
+
+      <button onclick="loadHistory()">
+        Xem hành trình
+      </button>
+
+      <button onclick="backToRealtime()">
+        Trở về realtime
+      </button>
+
+      <button onclick="clearRoute()">
+        Xóa đường đi
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <div class="topbar">
+
+      <h2>
+        Realtime GPS Tracking
+      </h2>
+
+      <div class="user">
+        Admin
+      </div>
+
+    </div>
+
+    <!-- MAP -->
+    <div id="map"></div>
+
+    <!-- FLOAT -->
+<div class="floating">
+
+  <h3>Tùy chọn bản đồ</h3>
+
+  <!-- ===== Toggle Route ===== -->
+  <div class="toggle">
+
+    <span>Hiển thị đường đi</span>
+
+    <input
+      type="checkbox"
+      id="routeToggle"
+      checked
+    />
+
+  </div>
+
+  <!-- ===== Route Info ===== -->
+  <div class="card">
+
+    <h3>Thông tin hành trình</h3>
+
+    <div class="info">
+      Tổng điểm:
+      <span id="totalPoints">
+        0
+      </span>
+    </div>
+
+    <div class="info">
+      Khoảng cách:
+      <span id="totalDistance">
+        0 km
+      </span>
+    </div>
+
+    <div class="info">
+      Tốc độ hiện tại:
+      <span id="currentSpeed">
+        0 km/h
+      </span>
+    </div>
+
+    <div class="info">
+      Chế độ:
+      <span id="mapMode">
+        REALTIME
+      </span>
+    </div>
+
+  </div>
+
+  <!-- ===== History Box ===== -->
+  <div
+    class="history-box"
+    id="historyBox">
+  </div>
+
+</div>
+
+  </div>
+
+</div>
+
+<!-- LEAFLET -->
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<!-- JS -->
+<script src="js/config.js"></script>
+<script src="js/map.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/route.js"></script>
+<script src="js/history.js"></script>
+<script src="js/gps.js"></script>
+<script src="js/control.js"></script>
+<script src="js/app.js"></script>
+
+</body>
+</html>
