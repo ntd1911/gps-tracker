@@ -2,11 +2,29 @@ async function loadHistory() {
 
   try {
 
-    const selectedDate = document.getElementById("historyDate").value;
+    // Support searching by date range (datetime) or by a single date.
+    const startVal = document.getElementById("historyStart")?.value;
+    const endVal = document.getElementById("historyEnd")?.value;
+    const selectedDate = document.getElementById("historyDate")?.value;
 
-    if (!selectedDate) {
-      alert("Chọn ngày trước");
+    if (!startVal && !endVal && !selectedDate) {
+      alert("Chọn ngày hoặc khoảng thời gian trước");
       return;
+    }
+
+    let startTime = null;
+    let endTime = null;
+
+    if (startVal || endVal) {
+      if (startVal) startTime = new Date(startVal);
+      if (endVal) endTime = new Date(endVal);
+      // If only one bound provided, use same moment for the other bound
+      if (!startTime && endTime) startTime = new Date(endTime.getTime());
+      if (!endTime && startTime) endTime = new Date(startTime.getTime());
+    } else {
+      // Use whole-day range for selected date
+      startTime = new Date(selectedDate + 'T00:00:00');
+      endTime = new Date(selectedDate + 'T23:59:59');
     }
 
     // Lấy channel của thiết bị đang được tick chọn.
@@ -36,17 +54,24 @@ async function loadHistory() {
       if (isNaN(lat) || isNaN(lng) || lat === 0 || lng === 0) return;
 
       const feedDate = new Date(feed.created_at);
-      const dateString = feedDate.toISOString().split("T")[0];
 
-      if (dateString === selectedDate) {
+      // Filter by selected time range
+      if (feedDate < startTime || feedDate > endTime) return;
 
         historyPoints.push([lat, lng]);
 
-        const time = feedDate.toLocaleTimeString("vi-VN");
+        // Format date and time as YYYY-MM-DD HH:MM:SS
+        const yyyy = feedDate.getFullYear();
+        const mo = String(feedDate.getMonth() + 1).padStart(2, '0');
+        const dd = String(feedDate.getDate()).padStart(2, '0');
+        const hh = String(feedDate.getHours()).padStart(2, '0');
+        const mm = String(feedDate.getMinutes()).padStart(2, '0');
+        const ss = String(feedDate.getSeconds()).padStart(2, '0');
+        const dateTime = `${yyyy}-${mo}-${dd} ${hh}:${mm}:${ss}`;
         const item = document.createElement("div");
         item.className = "history-item";
         item.innerHTML = `
-          <b>${time}</b><br>
+          <b>${dateTime}</b><br>
           Speed: ${speed} km/h<br>
           Lat: ${lat.toFixed(5)}<br>
           Lng: ${lng.toFixed(5)}
@@ -58,7 +83,6 @@ async function loadHistory() {
         };
 
         historyBox.appendChild(item);
-      }
     });
 
     if (historyPoints.length === 0) {

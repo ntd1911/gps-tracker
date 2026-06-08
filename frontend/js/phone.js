@@ -7,7 +7,9 @@ window.savePhoneNumber = async function () {
   try {
     const res = await savePhone({ phoneNumber });
     if (res && res.message) {
-      alert(res.message);
+      // show inline status instead of alert
+      const statusEl = document.getElementById('savedPhoneStatus');
+      if (statusEl) statusEl.innerText = 'Đã lưu: ' + phoneNumber;
       document.getElementById('phoneNumberInput').value = '';
     } else {
       alert('Lưu số điện thoại thất bại');
@@ -16,4 +18,10 @@ window.savePhoneNumber = async function () {
     console.error(err);
     alert('Lỗi khi gửi số điện thoại: ' + (err.message || err));
   }
+};
+
+window.clearSavedPhone = function () {
+  const statusEl = document.getElementById('savedPhoneStatus');
+  if (statusEl) statusEl.innerText = 'Chưa có số được lưu';
+  // Optionally call backend to remove saved phone (not implemented)
 };

@@ -9,6 +9,14 @@ function App() {
 
   return (
     <>
+      <header className="navbar container">
+        <div className="brand">GPS Tracker</div>
+        <nav>
+          <button className="btn secondary">Login</button>
+        </nav>
+      </header>
+
+      <main className="container">
       <section id="center">
         <div className="hero">
           <img src={heroImg} className="base" width="170" height="179" alt="" />
@@ -23,7 +31,7 @@ function App() {
         </div>
         <button
           type="button"
-          className="counter"
+          className="btn counter"
           onClick={() => setCount((count) => count + 1)}
         >
           Count is {count}
@@ -32,6 +40,9 @@ function App() {
 
       <div className="ticks"></div>
 
+      </main>
+
+      <main className="container">
       <section id="next-steps">
         <div id="docs">
           <svg className="icon" role="presentation" aria-hidden="true">
@@ -112,6 +123,9 @@ function App() {
           </ul>
         </div>
       </section>
+
+      </section>
+      </main>
 
       <div className="ticks"></div>
       <section id="spacer"></section>

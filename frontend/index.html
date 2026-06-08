@@ -18,6 +18,11 @@
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
   />
 
+  <!-- Inter font for professional typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
   <!-- CSS -->
   <link
     rel="stylesheet"
@@ -125,30 +130,36 @@
 
       <h3>Lịch sử</h3>
 
-      <input
-        type="date"
-        id="historyDate"
-      />
+      <div class="history-filters">
+        <label for="historyStart" style="display:block;margin-top:6px;color:#374151">Từ (ngày + giờ)</label>
+        <input id="historyStart" type="datetime-local" />
 
-      <button onclick="loadHistory()">
-        Xem hành trình
-      </button>
+        <label for="historyEnd" style="display:block;margin-top:8px;color:#374151">Đến (ngày + giờ)</label>
+        <input id="historyEnd" type="datetime-local" />
 
-      <button onclick="backToRealtime()">
-        Trở về realtime
-      </button>
+        <div style="margin-top:8px;color:#6b7280">Hoặc chọn ngày:</div>
+        <input type="date" id="historyDate" />
 
-      <button onclick="clearRoute()">
-        Xóa đường đi
-      </button>
+        <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+          <button onclick="loadHistory()">Xem hành trình</button>
+          <button onclick="backToRealtime()">Trở về realtime</button>
+          <button onclick="clearRoute()">Xóa đường đi</button>
+        </div>
+      </div>
 
     </div>
 
     <div class="card">
 
       <h3>Số điện thoại</h3>
-      <input id="phoneNumberInput" placeholder="Nhập số điện thoại" />
-      <button onclick="savePhoneNumber()" style="margin-top:10px;">Lưu số điện thoại</button>
+      <div class="phone-block">
+        <input id="phoneNumberInput" placeholder="Nhập số điện thoại" />
+        <div style="display:flex;gap:8px;margin-top:8px;">
+          <button onclick="savePhoneNumber()" style="flex:1">Lưu số điện thoại</button>
+          <button onclick="clearSavedPhone()" style="flex:0 0 40%;background:transparent;border:1px solid rgba(255,255,255,0.04);">Xóa</button>
+        </div>
+        <div id="savedPhoneStatus" style="margin-top:8px;color:rgba(230,238,248,0.6);font-size:13px;">Chưa có số được lưu</div>
+      </div>
 
     </div>
 
@@ -181,27 +192,6 @@
     <div id="map"></div>
 
     <!-- FLOAT -->
-    <div class="floating">
-
-      <h3>Tùy chọn bản đồ</h3>
-
-      <!-- ===== Toggle Route ===== -->
-      <div class="toggle">
-
-        <span>Hiển thị đường đi</span>
-
-        <input
-          type="checkbox"
-          id="routeToggle"
-          checked
-        />
-
-      </div>
-
-      <!-- ===== Route Info ===== -->
-      <div class="card">
-
-        <h3>Thông tin hành trình</h3>
 
         <div class="info">
           Tổng điểm:
