@@ -1,26 +1,19 @@
 // =========================
 // BACK TO REALTIME
 // =========================
-window.backToRealtime =
-async function () {
+window.backToRealtime = async function () {
 
   historyMode = false;
-
   historyPoints = [];
 
-  document.getElementById(
-    "historyBox"
-  ).innerHTML = "";
+  document.getElementById("historyBox").innerHTML = "";
 
-  routeLine.setLatLngs([]);
+  if (window.routeLine) window.routeLine.setLatLngs([]);
 
   realtimePoints = [];
 
-  statusElement.innerText =
-    "REALTIME";
-
-  statusElement.style.color =
-    "#22c55e";
+  statusElement.innerText = "REALTIME";
+  statusElement.style.color = "#22c55e";
 
   await loadGPS();
 };
@@ -28,12 +21,10 @@ async function () {
 // =========================
 // CLEAR ROUTE
 // =========================
-window.clearRoute =
-function () {
+window.clearRoute = function () {
 
   realtimePoints = [];
-
   historyPoints = [];
 
-  routeLine.setLatLngs([]);
+  if (window.routeLine) window.routeLine.setLatLngs([]);
 };

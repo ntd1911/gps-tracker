@@ -1,105 +1,57 @@
-async function loadGPS(){
+async function loadGPS() {
 
-  if(historyMode) return;
+  if (historyMode) return;
 
-  try{
+  try {
 
-    const response =
-    await fetch(
+    const response = await fetch(
       `https://api.thingspeak.com/channels/${channelID}/feeds.json?results=1`
     );
 
-    const data =
-    await response.json();
+    const data = await response.json();
+    const feed = data.feeds[0];
 
-    const feed =
-    data.feeds[0];
-
-    if(!feed){
-
+    if (!feed) {
       setOffline();
-
       return;
     }
 
-    const lat =
-    parseFloat(feed.field1);
+    const lat = parseFloat(feed.field1);
+    const lng = parseFloat(feed.field2);
+    const speed = feed.field3 || "0";
 
-    const lng =
-    parseFloat(feed.field2);
-
-    const speed =
-    feed.field3 || "0";
-
-    if(
-      isNaN(lat) ||
-      isNaN(lng)
-    ){
-
+    if (isNaN(lat) || isNaN(lng)) {
       setNoGPS();
-
       return;
     }
 
-    document.getElementById("lat")
-    .innerText =
-    lat.toFixed(6);
+    document.getElementById("lat").innerText = lat.toFixed(6);
+    document.getElementById("lng").innerText = lng.toFixed(6);
+    document.getElementById("speed").innerText = speed + " km/h";
+    document.getElementById("currentSpeed").innerText = speed + " km/h";
+    document.getElementById("mapMode").innerText = "REALTIME";
+    document.getElementById("totalPoints").innerText = realtimePoints.length;
+    document.getElementById("totalDistance").innerText =
+      calculateDistance(realtimePoints) + " km";
 
-    document.getElementById("lng")
-    .innerText =
-    lng.toFixed(6);
+    statusElement.innerText = "ONLINE";
+    statusElement.style.color = "#22c55e";
 
-    document.getElementById("speed")
-    .innerText =
-    speed + " km/h";
+    // Dùng window.map / window.marker / window.routeLine để chắc chắn lấy đúng instance global
+    if (window.marker) window.marker.setLatLng([lat, lng]);
+    if (window.map) window.map.setView([lat, lng], 17);
 
-    document.getElementById(
-  "currentSpeed"
-).innerText =
-  speed + " km/h";
+    realtimePoints.push([lat, lng]);
 
-document.getElementById(
-  "mapMode"
-).innerText =
-  "REALTIME";
-
-document.getElementById(
-  "totalPoints"
-).innerText =
-  realtimePoints.length;
-
-document.getElementById(
-  "totalDistance"
-).innerText =
-  calculateDistance(
-    realtimePoints
-  ) + " km";
-  
-    statusElement.innerText =
-    "ONLINE";
-
-    statusElement.style.color =
-    "#22c55e";
-
-    marker.setLatLng([lat,lng]);
-
-    map.setView([lat,lng],17);
-
-    realtimePoints.push([lat,lng]);
-
-    if(realtimePoints.length > 100){
-
+    if (realtimePoints.length > 100) {
       realtimePoints.shift();
     }
 
-    await drawRealRoute(
-      realtimePoints
-    );
+    await drawRealRoute(realtimePoints);
 
-  }catch(err){
+  } catch (err) {
 
-    console.log(err);
-
+    console.error(err);
     setOffline();
   }
 }

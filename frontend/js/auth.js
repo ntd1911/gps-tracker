@@ -14,20 +14,58 @@ function showRegister() {
 }
 
 function showAppPage() {
-  document.getElementById('authPage').style.display = 'none';
-  document.getElementById('appPage').style.display = 'block';
-  const username = localStorage.getItem('username');
-  if (username) {
-    const currentUser = document.getElementById('currentUser');
-    if (currentUser) currentUser.innerText = username;
+
+  // hiện app
+  document.getElementById(
+    "authPage"
+  ).style.display = "none";
+
+  document.getElementById(
+    "appPage"
+  ).style.display = "flex";
+
+  // đợi DOM render xong
+  requestAnimationFrame(() => {
+
+    requestAnimationFrame(() => {
+
+      // tạo map
+      initializeMap();
+
+      // force resize
+      if (window.map) {
+
+        window.map.invalidateSize(true);
+
+      }
+
+    });
+
+  });
+
+  setTimeout(() => {
+
+  initializeMap();
+
+  if (window.map) {
+
+    window.map.invalidateSize(true);
+
   }
-  // ensure map is initialized and invalidated after page becomes visible
-  try {
-    if (typeof initializeMap === 'function') initializeMap();
-    setTimeout(() => {
-      if (window.map && typeof window.map.invalidateSize === 'function') window.map.invalidateSize();
-    }, 150);
-  } catch (e) { console.error(e); }
+
+  // bắt đầu GPS realtime
+  loadGPS();
+
+  // tránh tạo nhiều interval
+  if (!window.gpsInterval) {
+
+    window.gpsInterval =
+      setInterval(loadGPS,15000);
+
+  }
+
+}, 500);
+
 }
 
 window.register = async function () {

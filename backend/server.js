@@ -20,6 +20,9 @@ require("./routes/parkingRoutes");
 const deviceRoutes =
 require("./routes/deviceRoutes");
 
+const phoneRoutes =
+require("./routes/phoneRoutes");
+
 const app = express();
 
 app.use(cors({
@@ -48,6 +51,11 @@ app.use(
 app.use(
   "/api/device",
   deviceRoutes
+);
+
+app.use(
+  "/api/phone",
+  phoneRoutes
 );
 
 app.get("/", (req, res) => {

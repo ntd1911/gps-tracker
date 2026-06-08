@@ -1,83 +1,51 @@
-// Lazy initialize Leaflet map when needed (avoids creating map in hidden container)
+// Các biến global — được expose ra window để các file khác dùng được
 let map;
+let marker;
 let routeLine;
 let tileLayer;
 
-function createMapDebugUI() {
-  const el = document.getElementById('map');
-  if (!el) return;
-  // avoid duplicating
-  if (document.getElementById('map-debug')) return;
-  const box = document.createElement('div');
-  box.id = 'map-debug';
-  box.innerHTML = `
-    <div id="map-debug-info">Map: checking...</div>
-    <button id="map-debug-toggle">Chỉ marker</button>
-  `;
-  el.appendChild(box);
-  document.getElementById('map-debug-toggle').addEventListener('click', ()=>{
-    if (tileLayer) {
-      try { tileLayer.remove(); } catch(e){}
-      el.classList.add('tiles-missing');
-      const info = document.getElementById('map-debug-info');
-      if (info) info.innerText = 'Mode: marker-only';
-    }
-  });
-}
-
 function initializeMap() {
-  if (map) return map;
-  const el = document.getElementById('map');
-  if (!el) return null;
-  if (typeof L === 'undefined') {
-    el.innerHTML = '<div style="color:#cbd5e1;padding:20px">Bản đồ không thể tải (Leaflet chưa được tải). Vui lòng kiểm tra kết nối mạng.</div>';
-    return null;
+
+  // Nếu map đã tồn tại, chỉ cần invalidateSize để vẽ lại đúng kích thước
+  if (map) {
+    setTimeout(() => {
+      map.invalidateSize();
+    }, 300);
+    return map;
   }
 
   map = L.map("map").setView([21.0285, 105.8542], 13);
+
   tileLayer = L.tileLayer(
     "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
     {
-      attribution: "&copy; OpenStreetMap"
+      attribution: "&copy; OpenStreetMap contributors"
     }
   ).addTo(map);
 
-  // If tiles fail to load (offline/network), remove layer and show placeholder
-  tileLayer.on('tileerror', function () {
-    try {
-      tileLayer.remove();
-    } catch (e) {}
-    const el = document.getElementById('map');
-    if (el) {
-      el.classList.add('tiles-missing');
-      // add message overlay if not present
-      if (!document.getElementById('map-placeholder')) {
-        const msg = document.createElement('div');
-        msg.id = 'map-placeholder';
-        msg.innerText = 'Tiles không thể tải — hiển thị vị trí mà không có bản đồ nền.';
-        el.appendChild(msg);
-      }
-    }
+  tileLayer.on("tileerror", () => {
+    console.warn("Tile load error");
   });
 
-  // create debug UI and start updater
-  createMapDebugUI();
-  setInterval(()=>{
-    try{
-      const info = document.getElementById('map-debug-info');
-      if (!info) return;
-      const tiles = document.querySelectorAll('#map .leaflet-tile-pane img').length;
-      info.innerText = `Tiles: ${tiles} | Size: ${Math.round(document.getElementById('map').clientWidth)}x${Math.round(document.getElementById('map').clientHeight)}`;
-    }catch(e){}
-  },1000);
+  marker = L.marker([21.0285, 105.8542]).addTo(map);
 
-  // initial marker and polyline
-  const marker = L.marker([21.0285, 105.8542]).addTo(map);
-  routeLine = L.polyline([], { color: "red", weight: 5 }).addTo(map);
+  routeLine = L.polyline([], {
+    color: "red",
+    weight: 5
+  }).addTo(map);
 
-  // expose map globally
-  window.map = map;
+  // Expose ra window để các file khác (devices.js, history.js, gps.js...) truy cập được
+  window.map      = map;
+  window.marker   = marker;
+  window.routeLine = routeLine;
+
+  setTimeout(() => {
+    map.invalidateSize();
+  }, 300);
+
   return map;
 }
 
-window.initializeMap = initializeMap;
+// KHÔNG gọi initializeMap() ở đây nữa.
+// Việc khởi tạo map được thực hiện bởi showAppPage() trong auth.js
+// để đảm bảo #appPage đang hiển thị (display:block) trước khi Leaflet tính kích thước.

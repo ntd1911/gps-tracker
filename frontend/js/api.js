@@ -58,3 +58,13 @@ async function addDevice(payload) {
 async function getMyDevices() {
   return getAuth('/device/me');
 }
+
+// Geofence
+async function saveGeofenceAPI(payload) {
+  return postAPI('/geofence/save', payload);
+}
+
+// Phone
+async function savePhone(payload) {
+  return postAuth('/phone', payload);
+}
